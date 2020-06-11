@@ -1,0 +1,66 @@
+{
+  "name": "sensorappreact",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.28",
+    "@fortawesome/free-solid-svg-icons": "^5.13.0",
+    "@fortawesome/react-fontawesome": "^0.1.9",
+    "@popperjs/core": "^2.4.0",
+    "@vx/network": "0.0.197",
+    "bootstrap": "^4.5.0",
+    "d3": "^5.16.0",
+    "global": "^4.3.0",
+    "jquery": "^3.5.1",
+    "modernizr": "^3.11.1",
+    "normalize": "^0.3.1",
+    "normalize.css": "^8.0.1",
+    "prop-types": "^15.5.10",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-graph-vis": "^1.0.5",
+    "react-popper": "^2.2.3",
+    "react-redux": "^7.2.0",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "^2.1.1",
+    "shards-react": "^1.0.3",
+    "socket.io-client": "^2.3.0",
+    "styled-components": "^5.1.0",
+    "vis-data": "^6.5.3",
+    "vis-network": "^7.6.10"
+  },
+  "scripts": {
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "case-sensitive-paths-webpack-plugin": "^2.3.0",
+    "copy-webpack-plugin": "^5.1.1",
+    "imagemin-pngquant": "^5.0.1",
+    "node-sass": "^4.14.1",
+    "pngquant-bin": "^3.1.1",
+    "react-app-rewire-alias": "^0.1.4",
+    "react-app-rewire-imagemin-plugin": "^1.0.1",
+    "react-app-rewire-modernizr": "^0.2.1",
+    "react-app-rewire-postcss": "^3.0.2",
+    "react-app-rewire-styled-components": "^3.0.2",
+    "react-app-rewired": "^2.1.6"
+  }
+}
