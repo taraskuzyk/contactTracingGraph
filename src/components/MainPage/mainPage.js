@@ -15,7 +15,7 @@ export default () => {
     const [socket, setSocket] = useState(null)
     const [isSocketSetUp, setIsSocketSetUp] = useState(false);
     const [nodes, setNodes] = useState(devices.map(device => {
-        return {id: device.deveui, label: device.name, title: device.name, group: 'safe'}
+        return {id: device.name, group: 1}
     }));
     const [links, setLinks] = useState([])
 
@@ -36,34 +36,39 @@ export default () => {
     const getData = () => {
         let newLinks = links;
         for (let i = 0; i < links.length; i++){
-            for (let j = 0; j < nodes.length; j++){
-                if (links[i].from === nodes[j].id)
+            for (let j = 0; j < devices.length; j++){
+                if (links[i].source === devices[j].deveui)
                     setLinks(links.slice(i))
             }
         }
         let newNodes = nodes;
+
         for (let i = 0; i < devices.length; i++){
             let isLinkDetected = false;
             for (let j = 0; j < devices.length; j++){
                 if(isMacDetected(devices[i].deveui, devices[j].mac)) {
                     console.log(devices[i].deveui, devices[j].mac)
                     isLinkDetected = true;
-                    newNodes[i].group = 'danger'
-                    newNodes[j].group = 'danger'
+                    newNodes[i].group = 2
+                    newNodes[j].group = 2
                     let isLinkDuplicate = false;
                     for (let n = 0; n < links.length; n++){
-                        if (devices[i].deveui === links[n].from && devices[j].deveui === links[n].to)
+
+                        if (devices[i].deveui === links[n].source && devices[j].deveui === links[n].target)
                             isLinkDuplicate = true;
+                        if (devices[i].deveui === links[n].target && devices[j].deveui === links[n].source)
+                            links[n].value = 9
                     }
-                    if (!isLinkDuplicate)
-                        newLinks.push({from: devices[i].deveui, to: devices[j].deveui})
+                    if (!isLinkDuplicate) {
+                        newLinks.push({source: devices[i].name, target: devices[j].name, value: 1})
+                        console.log(newLinks)
+                    }
                 }
             }
             if (!isLinkDetected)
-                newNodes[i].group = 'safe'
+                newNodes[i].group = 1
         }
 
-        setNodes({})
         setNodes(newNodes)
         setLinks(newLinks)
     }
@@ -98,7 +103,7 @@ export default () => {
         <Fragment>
             <Container fluid>
                 <Card>
-                    <MyGraph nodes={nodes} links={Array.from(links)}/>
+                    <MyGraph nodes={nodes} links={links}/>
                 </Card>
             </Container>
         </Fragment>
