@@ -1,98 +1,119 @@
 import React, {Fragment, useEffect, useState} from 'react'
 import io from 'socket.io-client'
-import {Card, Container} from "shards-react";
+import {Card, Container, FormInput} from "shards-react";
 import MyGraph from "../../elements/graph/graph";
 
 const devices = [
-    {deveui: "647FDA0000005972", mac: "90d581", name: "Aaron"},
-    {deveui: "647FDA000000597F", mac: "90d5a4", name: "Bob"},
-    {deveui: "647FDA00000059CC", mac: "90d5e5", name: "Charlotte"},
-    {deveui: "647FDA0000005974", mac: "90dc1a", name: "Dianna"},
+    {deveui: "647FDA000000589A", mac: "90D667", name: "Jack Stewart"},
+    {deveui: "647FDA00000058AE", mac: "90D60B", name: "Jeffrey Perry"},
+    {deveui: "647FDA000000597F", mac: "90D5A4", name: "Carter Mudryk"},
+    {deveui: "647FDA0000005974", mac: "90DC1A", name: "Taras Kuzyk"},
+    {deveui: "647FDA0000005892", mac: "90D659", name: "Roman Nemish"},
 ]
 
 export default () => {
     const [devicesData, setDevicesData] = useState({});
     const [socket, setSocket] = useState(null)
     const [isSocketSetUp, setIsSocketSetUp] = useState(false);
-    const [nodes, setNodes] = useState(devices.map(device => {
-        return {id: device.name, group: 1}
-    }));
+    const [nodes, setNodes] = useState(
+        devices.map(device => {
+            return {id: device.deveui, label: device.name, title: device.name, group: 'safe', mac: device.mac}
+        })
+    );
     const [links, setLinks] = useState([])
 
-    const isMacDetected = (deveui, mac) => {
+    const isMacDetected = (deveuiSender, macReceiver) => {
         if (!devicesData)
             return false
-        if (devicesData.hasOwnProperty(deveui)) {
-            for (let i = 0; i < devicesData[deveui].length; i++) {
-                if (devicesData[deveui][i].id === mac &&
-                    devicesData[deveui][i].deveui === deveui &&
-                    devicesData[deveui][i].rssi > -75)
+        if (devicesData.hasOwnProperty(deveuiSender)) {
+            for (let i = 0; i < devicesData[deveuiSender].length; i++) {
+                if (devicesData[deveuiSender][i].id === macReceiver.toLowerCase() &&
+                    devicesData[deveuiSender][i].avg > -70){
                     return true;
+                }
             }
         }
         return false;
     }
 
     const getData = () => {
-        let newLinks = links;
-        for (let i = 0; i < links.length; i++){
-            for (let j = 0; j < devices.length; j++){
-                if (links[i].source === devices[j].deveui)
-                    setLinks(links.slice(i))
-            }
-        }
-        let newNodes = nodes;
-
-        for (let i = 0; i < devices.length; i++){
+        for (let i = 0; i < nodes.length; i++){ // receiver nodes
             let isLinkDetected = false;
-            for (let j = 0; j < devices.length; j++){
-                if(isMacDetected(devices[i].deveui, devices[j].mac)) {
-                    console.log(devices[i].deveui, devices[j].mac)
+            for (let j = 0; j < nodes.length; j++){ // beacon nodes
+                if (isMacDetected(nodes[i].id, devices[j].mac)) {
                     isLinkDetected = true;
-                    newNodes[i].group = 2
-                    newNodes[j].group = 2
+
+                    setNodes(nodes => { //TODO: this can work if you use proper setState (updater form)
+                        var newNodes = [...nodes]
+                        newNodes[i].group = 'danger'
+                        return newNodes
+                    })
+
                     let isLinkDuplicate = false;
                     for (let n = 0; n < links.length; n++){
-
-                        if (devices[i].deveui === links[n].source && devices[j].deveui === links[n].target)
-                            isLinkDuplicate = true;
-                        if (devices[i].deveui === links[n].target && devices[j].deveui === links[n].source)
-                            links[n].value = 9
+                        if (devices[i].deveui === links[n].from && devices[j].deveui === links[n].to)
+                            isLinkDuplicate = true
                     }
-                    if (!isLinkDuplicate) {
-                        newLinks.push({source: devices[i].name, target: devices[j].name, value: 1})
-                        console.log(newLinks)
+
+                    if (!isLinkDuplicate)
+                        setLinks(links => [...links,
+                                {
+                                    from: devices[i].deveui,
+                                    to: devices[j].deveui,
+                                    fromName: devices[i].name,
+                                    toName: devices[j].name
+                                }
+                            ]
+                        )
+
+                } else {
+                    for (let n = 0; n < links.length; n++){
+                        if (links[n].from === devices[i].deveui && links[n].to === devices[j].deveui){
+                            setLinks(links => links.slice(n))
+                        }
                     }
                 }
             }
-            if (!isLinkDetected)
-                newNodes[i].group = 1
-        }
+            if (!isLinkDetected) {
+                setNodes(nodes => {
+                    var newNodes = [...nodes]
+                    newNodes[i].group = 'safe'
+                    return newNodes
+                })
+            }
 
-        setNodes(newNodes)
-        setLinks(newLinks)
+        }
     }
 
     useEffect(()=> {
-        getData()
+        if (nodes.length > 0)
+            getData()
+        //console.log(devicesData)
     }, [devicesData]);
 
+    useEffect(()=>{
+        //console.log(links)
+    }, [links])
+
+    useEffect(()=>{
+        console.log(nodes)
+    }, [nodes])
+
     useEffect(()=> {
-        setSocket(io("http://localhost:2000"))
+        setSocket(io("http://localhost:4000"))
     }, []);
 
     useEffect(()=>{
         if (socket !== null && !isSocketSetUp ) {
 
-            socket.emit("getUsers");
-
             socket.on("detectedDevices", ({detectedDevices, deveui}) => {
-                if (deveui !== "647FDA00000059A1" && deveui !== "647FDA0000000ADE") {
-                    let newDevicesData = devicesData;
-                    newDevicesData[deveui] = detectedDevices;
-                    setDevicesData({}) //TODO: this is a stupid way of doing this. This needs to be fixed.
-                    setDevicesData(newDevicesData)
-                }
+                // setDevicesData(devicesData => {
+                //     devicesData[deveui] = detectedDevices
+                //     console.log(devicesData)
+                //     return devicesData
+                // })
+                let newDetectedDevices = Object.fromEntries([[deveui, detectedDevices]])
+                setDevicesData(devicesData => ({ ...devicesData, ...newDetectedDevices}) )
             })
 
             setIsSocketSetUp(true);
@@ -101,11 +122,8 @@ export default () => {
 
     return (
         <Fragment>
-            <Container fluid>
-                <Card>
-                    <MyGraph nodes={nodes} links={links}/>
-                </Card>
-            </Container>
+            <MyGraph nodes={nodes} links={links} />
+            <FormInput/>
         </Fragment>
     )
 }

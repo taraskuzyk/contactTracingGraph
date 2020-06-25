@@ -16,7 +16,7 @@ export const MainLayout = (props) => {
 
             { props.children }
 
-            <Container className="mt-5">
+            {/*<Container className="mt-5">
                 <Col>
                     <Nav className="smaller">
                         <NavItem>
@@ -27,7 +27,7 @@ export const MainLayout = (props) => {
                         </NavItem>
                     </Nav>
                 </Col>
-            </Container>
+            </Container>*/}
 
         </Wrapper>
     )
