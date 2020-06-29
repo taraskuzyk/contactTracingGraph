@@ -30,6 +30,13 @@ export default function MyGraph({nodes, links}) {
                     min: 50,
                     max: 70
                 }
+            },
+            font: {
+                size: 40,
+                align: 'center'
+            },
+            heightConstraint: {
+
             }
         },
         height: "1000",
@@ -37,10 +44,11 @@ export default function MyGraph({nodes, links}) {
             barnesHut: {
                 gravitationalConstant: -10000,
                 centralGravity: 0.6,
-                springLength: 100,
+                springLength: 150,
                 springConstant: 0.05
             },
         },
+
         /*groups: {
             danger: {color: 'red'},
             safe: {color: 'limegreen'}
