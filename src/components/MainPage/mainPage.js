@@ -11,9 +11,9 @@ const devices = [
     // {deveui: "647FDA0000005974", mac: "90DC1A", name: "   D   "},
     // {deveui: "647FDA0000005892", mac: "90D659", name: "   E   "},
     // SwissCom
-    {deveui: "647FDA000000596D", mac: "90D5AA", name: "#1"},
-    {deveui: "647FDA00000059B3", mac: "90DC2A", name: "#2"},
-    {deveui: "647FDA00000059BE", mac: "90DC16", name: "#3"},
+    {deveui: "647FDA000000596D", mac: "90D5AA", name: "  #1  "},
+    {deveui: "647FDA00000059B3", mac: "90DC2A", name: "  #2  "},
+    {deveui: "647FDA00000059BE", mac: "90DC16", name: "  #3  "},
 ]
 
 export default () => {
@@ -101,13 +101,11 @@ export default () => {
 
     useEffect(()=>{
         if (socket !== null && !isSocketSetUp ) {
-
+            console.log("SOCKET")
             socket.on("detectedDevices", ({detectedDevices, deveui}) => {
-                console.log("ASDAKJSD")
+                console.log("SOCKET")
                 setDevicesData(devicesData => ({ ...devicesData, [deveui]: detectedDevices}) )
             })
-
-
 
             setIsSocketSetUp(true);
         }
