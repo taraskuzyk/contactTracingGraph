@@ -2,10 +2,14 @@ import React from "react";
 import Graph from "react-graph-vis";
 
 export default function MyGraph({nodes, links}) {
+
+
     const graph = {
         nodes: nodes,
         edges: links
     };
+
+    console.log(links)
 
     const options = {
         layout: {
