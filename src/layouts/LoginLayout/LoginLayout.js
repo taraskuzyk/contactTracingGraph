@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import {Col, Container, Nav, NavItem} from 'shards-react'
 
 import Navbar from '@elements/navbar/navbar'
 
@@ -8,7 +7,7 @@ const Wrapper = styled.div`
   height: 100%
 `
 
-export const MainLayout = (props) => {
+export const LoginLayout = (props) => {
 
     return (
         <Wrapper >
@@ -34,4 +33,4 @@ export const MainLayout = (props) => {
 
 }
 
-export default MainLayout
+export default LoginLayout

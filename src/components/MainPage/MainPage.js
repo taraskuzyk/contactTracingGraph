@@ -1,5 +1,6 @@
 import React, {Fragment, useEffect, useState} from 'react'
 import io from 'socket.io-client'
+import { useHistory } from 'react-router-dom'
 import {Card, Container, FormInput} from "shards-react";
 import MyGraph from "../../elements/graph/graph";
 
@@ -16,7 +17,8 @@ const devices = [
     {deveui: "647FDA00000059BE", mac: "90DC16", name: "  #3  "},
 ]
 
-export default () => {
+export default (props) => {
+    const history = useHistory()
     const [devicesData, setDevicesData] = useState({});
     const [socket, setSocket] = useState(null)
     const [isSocketSetUp, setIsSocketSetUp] = useState(false);
@@ -33,7 +35,7 @@ export default () => {
         if (devicesData.hasOwnProperty(deveuiSender)) {
             for (let i = 0; i < devicesData[deveuiSender].length; i++) {
                 if (devicesData[deveuiSender][i].id === macReceiver.toLowerCase() &&
-                    devicesData[deveuiSender][i].avg > -70){
+                    devicesData[deveuiSender][i].avg >= -72.5){
                     return true;
                 }
             }
@@ -96,17 +98,23 @@ export default () => {
     }, [devicesData]);
 
     useEffect(()=> {
-        setSocket(io("http://localhost:4000"))
+        if (props.location.state) {
+            console.log(props.location.state)
+            if (props.location.state.isLoggedIn) {
+                setSocket(io("http://swisscom-contact-tracin-demo-backend.ngrok.io"))
+            } else {
+                history.push('/login')
+            }
+        } else {
+            history.push('/login')
+        }
     }, []);
 
     useEffect(()=>{
         if (socket !== null && !isSocketSetUp ) {
-            console.log("SOCKET")
             socket.on("detectedDevices", ({detectedDevices, deveui}) => {
-                console.log("SOCKET")
                 setDevicesData(devicesData => ({ ...devicesData, [deveui]: detectedDevices}) )
             })
-
             setIsSocketSetUp(true);
         }
     }, [socket])
